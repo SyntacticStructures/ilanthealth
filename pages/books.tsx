@@ -4,6 +4,8 @@ import {FormEvent, useState} from 'react';
 interface Book {
     title: string,
     thumbnail: string
+    authors: string[]
+    description: string
 }
 
 export default function Books() {
@@ -33,7 +35,9 @@ export default function Books() {
             <button type="submit">Submit</button>
             {booksData.map((book, idx) => (
                 <div key={`${book.title}-${idx}`}>
-                    <p>{book.title}</p>
+                    <p>title: {book.title}</p>
+                    <p>authors: {book.authors.join(', ')}</p>
+                    <p>description: {book.description}</p>
                     <Image
                         src={book.thumbnail}
                         alt={book.title}

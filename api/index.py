@@ -30,7 +30,9 @@ def search(query: str = Form(...)):
     pprint(books[0])
     items = [{
         'title': book['volumeInfo']['title'],
-        'thumbnail': book['volumeInfo']['imageLinks']['thumbnail']
+        'thumbnail': book['volumeInfo']['imageLinks']['thumbnail'],
+        'authors': book['volumeInfo']['authors'],
+        'description': book['volumeInfo']['description']
       } for book in books]
 
     return json.dumps(items)
