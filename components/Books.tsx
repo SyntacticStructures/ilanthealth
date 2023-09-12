@@ -9,7 +9,7 @@ export default function Books({books}: Props) {
 
     return (
         <ul className="grid grid-cols-1 gap-y-10 gap-x-6 items-start p-8 max-w-3xl xl:max-w-4xl m-auto">
-            {books ? books.map((book, idx) => (
+            {books.map((book, idx) => (
                 <li key={`${book.title}-${idx}`} className="relative flex flex-col sm:flex-row xl:flex-row items-start p-8 border-5 rounded-lg bg-white">
                     <div className="order-1 ml-0 sm:ml-6 lg:ml-6 sm:w-3/4">
                         <h3 className="mb-1 text-slate-500 font-semibold">
@@ -22,7 +22,7 @@ export default function Books({books}: Props) {
                              className="mb-6 shadow-md rounded-lg bg-slate-50 sm:w-[17rem] sm:mb-0 xl:mb-6"/>
                     </div>
                 </li>
-            )) : <dl>nothing here</dl>}
+            ))}
 
         </ul>
     )

@@ -16,7 +16,6 @@ export function InfiniteScrollBooks() {
         const newStartIndex = startIndex + 10;
         const newBooks = await fetchBooks(query, newStartIndex);
         setBooks([...books, ...newBooks]);
-        setNoResults(!books.length)
         setStartIndex(newStartIndex);
     }
 
@@ -27,6 +26,7 @@ export function InfiniteScrollBooks() {
         if (query) {
             setQuery(query)
             const booksData = await fetchBooks(query, 0);
+            setNoResults(!booksData.length)
             setBooks(booksData)
         }
     }
@@ -54,7 +54,11 @@ export function InfiniteScrollBooks() {
                 </button>
             </form>
             <Books books={books}/>
-            {noResults && <div>no results found</div>}
+            {books.length === 0 &&
+                <div className="m-auto text-slate-500 text-center">
+                    {noResults ? `no results found for query: ${query}` : 'no books to show'}
+                </div>
+            }
             { books.length >= 10 &&
                 <div ref={ref}>
                     <Spinner />
