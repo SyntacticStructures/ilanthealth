@@ -9,7 +9,6 @@ export default async function fetchBooks(query: string, startIndex: number): Pro
 
     if (booksResponse.ok) {
         const bs  = await booksResponse.json()
-        console.log(bs)
         return await JSON.parse(bs) || [] as Book[];
     } else {
         // TODO: Handle error

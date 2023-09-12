@@ -3,7 +3,7 @@ import {InfiniteScrollBooks} from "@/components/InfiniteScrollBooks";
 
 export default function Home() {
     return (
-        <div>
+        <div className="bg-gray-200 min-h-screen">
             <InfiniteScrollBooks />
         </div>
     )

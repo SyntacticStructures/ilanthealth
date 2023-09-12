@@ -3,9 +3,11 @@ import {FormEvent, useEffect, useState} from "react";
 import {Book} from "@/types";
 import fetchBooks from "@/actions/fetchBooks";
 import Books from "@/components/Books";
+import Spinner from "@/components/Spinner";
 
 export function InfiniteScrollBooks() {
     const [books, setBooks] = useState<Book[]>([]);
+    const [noResults, setNoResults] = useState(false);
     const [query, setQuery] = useState<string>('');
     const {ref, inView} = useInView();
     const [startIndex, setStartIndex] = useState(0);
@@ -14,6 +16,7 @@ export function InfiniteScrollBooks() {
         const newStartIndex = startIndex + 10;
         const newBooks = await fetchBooks(query, newStartIndex);
         setBooks([...books, ...newBooks]);
+        setNoResults(!books.length)
         setStartIndex(newStartIndex);
     }
 
@@ -39,14 +42,24 @@ export function InfiniteScrollBooks() {
 
     return (
         <div>
-            <form onSubmit={onSubmit}>
-                <input type="text" name="query"/>
-                <button type="submit">Submit</button>
+            <form className="flex items-center px-10 pt-8 max-w-3xl xl:max-w-4xl m-auto" onSubmit={onSubmit}>
+                <label htmlFor="voice-search" className="sr-only">Search</label>
+                <div className="relative w-full">
+                    <input name="query" type="text" id="voice-search" className="bg-gray-50 border border-gray-300 text-md rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-5 p-2.5" placeholder="Search Books" required/>
+                </div>
+                <button type="submit" className="inline-flex items-center py-2.5 px-3 ml-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600">
+                    <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                    </svg>Search
+                </button>
             </form>
             <Books books={books}/>
-            <div ref={ref}>
-                load once you reach me
-            </div>
+            {noResults && <div>no results found</div>}
+            { books.length >= 10 &&
+                <div ref={ref}>
+                    <Spinner />
+                </div>
+            }
         </div>
     )
 }

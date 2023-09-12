@@ -1,7 +1,6 @@
+from http import HTTPStatus
 import json
 import os
-from pprint import pprint
-from collections import defaultdict
 
 from python.custom_exceptions import MissingEnvironmentVariable
 
@@ -11,29 +10,37 @@ import requests
 app = FastAPI()
 
 if 'API_KEY' not in os.environ:
-    print('api_key')
     raise MissingEnvironmentVariable('API_KEY')
 
 api_key = os.environ['API_KEY']
 
+
 @app.post("/api/search")
 async def search(request: Request):
     body = await request.json()
-    print(request)
     params = {
         'key': api_key,
         'q': body['query'],
         'startIndex': body['startIndex'],
         'maxResults': 10
     }
-    resp = requests.get('https://www.googleapis.com/books/v1/volumes', params=params)
-    books = resp.json()['items']
-    pprint(books[0])
-    items = [{
-        'title': book['volumeInfo'].get('title', ''),
-        'thumbnail': book['volumeInfo'].get('imageLinks').get('thumbnail', ''),
-        'authors': book['volumeInfo'].get('authors', []),
-        'description': book['volumeInfo'].get('description', '')
-      } for book in books]
+    try:
+        resp = requests.get('https://www.googleapis.com/books/v1/volumes', params=params)
+        resp.raise_for_status()
+        books = resp.json().get('items', [])
+        items = [{
+            'title': book.get('volumeInfo', {}).get('title', ''),
+            'thumbnail': book.get('volumeInfo', {}).get('imageLinks', {}).get('thumbnail', ''),
+            'authors': book.get('volumeInfo', {}).get('authors', []),
+            'description': book.get('volumeInfo', {}).get('description', '')
+        } for book in books]
 
-    return json.dumps(items)
+        return json.dumps(items)
+    except requests.exceptions.Timeout as e:
+        return {'error': f'Request timed out: {e}'}, HTTPStatus.GATEWAY_TIMEOUT
+    except requests.exceptions.ConnectionError as e:
+        return {'error': f'Connection error occurred: {e}'}, HTTPStatus.INTERNAL_SERVER_ERROR
+    except requests.exceptions.HTTPError as e:
+        return {'error': f'HTTP error occurred: {e}'}, HTTPStatus.INTERNAL_SERVER_ERROR
+    except requests.exceptions.RequestException as e:
+        return {'error': f'An error occurred: {e}'}, HTTPStatus.INTERNAL_SERVER_ERROR
