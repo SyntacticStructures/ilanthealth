@@ -8,7 +8,7 @@ export interface Props {
 export default function Books({books}: Props) {
 
     return (
-        <ul className="grid grid-cols-1 gap-y-10 gap-x-6 items-start p-8 max-w-3xl xl:max-w-4xl m-auto">
+        <ul data-testid="books" className="grid grid-cols-1 gap-y-10 gap-x-6 items-start p-8 max-w-3xl xl:max-w-4xl m-auto">
             {books.map((book, idx) => (
                 <li key={`${book.title}-${idx}`} className="relative flex flex-col sm:flex-row xl:flex-row items-start p-8 border-5 rounded-lg bg-white">
                     <div className="order-1 ml-0 sm:ml-6 lg:ml-6 sm:w-3/4">

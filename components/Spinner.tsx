@@ -1,6 +1,6 @@
 export default function Spinner() {
     return (
-        <div className="flex justify-center">
+        <div data-testid="spinner" className="flex justify-center">
             <svg className="w-10 h-10 mr-2 mb-8 text-gray-200 animate-spin fill-blue-600"
                  viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path

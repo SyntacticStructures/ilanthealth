@@ -1,24 +1,25 @@
-import {useState, useRef, useEffect} from 'react';
+import {useState, useRef} from 'react';
 
 interface TruncatedTextProps {
     text: string;
 }
 
+export const MAX_CHARS = 300;
+
 export default function ClampedText({text}: TruncatedTextProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const maxChars = 300;
 
     const toggleExpansion = () => {
         setIsExpanded(!isExpanded);
     };
 
     return (
-        <div>
-            <div ref={containerRef} className={text.length > maxChars && !isExpanded ? 'line-clamp-6' : ''}>
+        <div data-testid="clamped-text">
+            <div ref={containerRef} className={text.length > MAX_CHARS && !isExpanded ? 'line-clamp-6' : ''}>
                 {text.length ? text : 'No Description' }
             </div>
-            {text.length > maxChars && (
+            {text.length > MAX_CHARS && (
                 <div>
                     {isExpanded ? (
                         <button

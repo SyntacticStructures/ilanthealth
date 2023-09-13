@@ -5,6 +5,8 @@ import fetchBooks from "@/actions/fetchBooks";
 import Books from "@/components/Books";
 import Spinner from "@/components/Spinner";
 
+export const API_PAGE_SIZE = 10;
+
 export function InfiniteScrollBooks() {
     const [books, setBooks] = useState<Book[]>([]);
     const [noResults, setNoResults] = useState(false);
@@ -13,7 +15,8 @@ export function InfiniteScrollBooks() {
     const [startIndex, setStartIndex] = useState(0);
 
     async function fetchPage() {
-        const newStartIndex = startIndex + 10;
+        console.log('hello')
+        const newStartIndex = startIndex + API_PAGE_SIZE;
         const newBooks = await fetchBooks(query, newStartIndex);
         setBooks([...books, ...newBooks]);
         setStartIndex(newStartIndex);
@@ -33,19 +36,19 @@ export function InfiniteScrollBooks() {
 
 
     useEffect(() => {
-        // Load ff we see the loading spinner and
+        // Load if we see the loading spinner and
         // have already done the initial query
-        if (inView && books.length >= 10) {
+        if (inView && books.length >= API_PAGE_SIZE) {
             fetchPage();
         }
     }, [inView])
 
     return (
-        <div>
-            <form className="flex items-center px-10 pt-8 max-w-3xl xl:max-w-4xl m-auto" onSubmit={onSubmit}>
+        <div data-testid="infinite-scroll-books">
+            <form className="flex items-center px-10 pt-8 max-w-3xl xl:max-w-4xl m-auto" data-testid='search-form' onSubmit={onSubmit}>
                 <label htmlFor="voice-search" className="sr-only">Search</label>
                 <div className="relative w-full">
-                    <input name="query" type="text" id="voice-search" className="bg-gray-50 border border-gray-300 text-md rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-5 p-2.5" placeholder="Search Books" required/>
+                    <input name="query" type="text" data-testid='search-input' className="bg-gray-50 border border-gray-300 text-md rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-5 p-2.5" placeholder="Search Books" required/>
                 </div>
                 <button type="submit" className="inline-flex items-center py-2.5 px-3 ml-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600">
                     <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -59,7 +62,7 @@ export function InfiniteScrollBooks() {
                     {noResults ? `no results found for query: ${query}` : 'no books to show'}
                 </div>
             }
-            { books.length >= 10 &&
+            { books.length >= API_PAGE_SIZE &&
                 <div ref={ref}>
                     <Spinner />
                 </div>

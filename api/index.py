@@ -2,9 +2,9 @@ from http import HTTPStatus
 import json
 import os
 
-from python.custom_exceptions import MissingEnvironmentVariable
+from custom_exceptions import MissingEnvironmentVariable
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 import requests
 
 app = FastAPI()
@@ -18,6 +18,10 @@ api_key = os.environ['API_KEY']
 @app.post("/api/search")
 async def search(request: Request):
     body = await request.json()
+    if 'query' not in body:
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail='"query" is required in request body')
+    if 'startIndex' not in body or not isinstance(body['startIndex'], int):
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail='"startIndex" is required in request body')
     params = {
         'key': api_key,
         'q': body['query'],
@@ -36,11 +40,11 @@ async def search(request: Request):
         } for book in books]
 
         return json.dumps(items)
-    except requests.exceptions.Timeout as e:
-        return {'error': f'Request timed out: {e}'}, HTTPStatus.GATEWAY_TIMEOUT
-    except requests.exceptions.ConnectionError as e:
-        return {'error': f'Connection error occurred: {e}'}, HTTPStatus.INTERNAL_SERVER_ERROR
-    except requests.exceptions.HTTPError as e:
-        return {'error': f'HTTP error occurred: {e}'}, HTTPStatus.INTERNAL_SERVER_ERROR
-    except requests.exceptions.RequestException as e:
-        return {'error': f'An error occurred: {e}'}, HTTPStatus.INTERNAL_SERVER_ERROR
+
+    # TODO: log errors to logging service
+    except requests.exceptions.Timeout:
+        raise HTTPException(status_code=HTTPStatus.GATEWAY_TIMEOUT, detail='Request timed out')
+    except requests.exceptions.RequestException:
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail='An error occurred')
+    except Exception as e:
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail='An unknown error occurred')
