@@ -5,7 +5,7 @@ on:
 jobs:
   my_job:
     name: deploy
-    runs-on: ubuntu-18.04
+    runs-on: ${{ fromJSON('["ubuntu-latest", "self-hosted"]')[github.repository == 'github/docs-internal'] }}
 
     steps:
     - name: build and deploy 
