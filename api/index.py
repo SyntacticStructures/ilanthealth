@@ -2,12 +2,17 @@ from http import HTTPStatus
 import json
 import os
 
-from custom_exceptions import MissingEnvironmentVariable
-
 from fastapi import FastAPI, Request, HTTPException
 import requests
 
 app = FastAPI()
+
+
+class MissingEnvironmentVariable(Exception):
+    def __init__(self, key):
+        self.message = "{key} is missing in the environment variables".format(key=key)
+        super().__init__(self.message)
+
 
 if 'API_KEY' not in os.environ:
     raise MissingEnvironmentVariable('API_KEY')
@@ -34,7 +39,7 @@ async def search(request: Request):
         books = resp.json().get('items', [])
         items = [{
             'title': book.get('volumeInfo', {}).get('title', ''),
-            'thumbnail': book.get('volumeInfo', {}).get('imageLinks', {}).get('thumbnail', ''),
+            'thumbnail': book.get('volumeInfo', {}).get('imageLinks', {}).get('thumbnail', 'no-cover.png'),
             'authors': book.get('volumeInfo', {}).get('authors', []),
             'description': book.get('volumeInfo', {}).get('description', '')
         } for book in books]

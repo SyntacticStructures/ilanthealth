@@ -4,7 +4,7 @@ interface TruncatedTextProps {
     text: string;
 }
 
-export const MAX_CHARS = 300;
+export const MAX_CHARS = 350;
 
 export default function ClampedText({text}: TruncatedTextProps) {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -14,9 +14,13 @@ export default function ClampedText({text}: TruncatedTextProps) {
         setIsExpanded(!isExpanded);
     };
 
+    let className = ''
+    if (text.length > MAX_CHARS && !isExpanded) {
+        className = 'line-clamp-6'
+    }
     return (
         <div data-testid="clamped-text">
-            <div ref={containerRef} className={text.length > MAX_CHARS && !isExpanded ? 'line-clamp-6' : ''}>
+            <div ref={containerRef} className={className}>
                 {text.length ? text : 'No Description' }
             </div>
             {text.length > MAX_CHARS && (

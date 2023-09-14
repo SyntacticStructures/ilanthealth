@@ -15,7 +15,6 @@ export function InfiniteScrollBooks() {
     const [startIndex, setStartIndex] = useState(0);
 
     async function fetchPage() {
-        console.log('hello')
         const newStartIndex = startIndex + API_PAGE_SIZE;
         const newBooks = await fetchBooks(query, newStartIndex);
         setBooks([...books, ...newBooks]);
@@ -41,7 +40,7 @@ export function InfiniteScrollBooks() {
         if (inView && books.length >= API_PAGE_SIZE) {
             fetchPage();
         }
-    }, [inView])
+    })
 
     return (
         <div data-testid="infinite-scroll-books">
