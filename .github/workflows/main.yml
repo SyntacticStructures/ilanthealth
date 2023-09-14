@@ -2,12 +2,27 @@ on:
   push:
     branches:
       - master
-jobs:
-  my_job:
-    name: deploy
-    runs-on: ${{ fromJSON('["ubuntu-latest", "self-hosted"]')[github.repository == 'github/docs-internal'] }}
 
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-22.04
+    env:
+      API_KEY: 'foo'
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ github.workspace }}
     steps:
-    - name: build and deploy 
-      run: |
-        ls
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 'pypy3.9'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20.3.1'
+      - run: python -m venv venv
+      - run: source venv/bin/activate
+      - run: pip install -r requirements.txt
+      - run: npm install
+      - run: npm test
