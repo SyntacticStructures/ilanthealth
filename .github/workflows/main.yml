@@ -4,7 +4,7 @@ on:
       - master
 jobs:
   my_job:
-    name: deploy to staging
+    name: deploy
     runs-on: ubuntu-18.04
 
     steps:
