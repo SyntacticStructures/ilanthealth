@@ -1,0 +1,13 @@
+on:
+  push:
+    branches:
+      - master
+jobs:
+  my_job:
+    name: deploy to staging
+    runs-on: ubuntu-18.04
+
+    steps:
+    - name: build and deploy 
+      run: |
+        ls
