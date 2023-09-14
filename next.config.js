@@ -7,7 +7,8 @@ const nextConfig = {
         destination:
           process.env.NODE_ENV === "development"
             ? "http://127.0.0.1:8000/api/:path*"
-            : "http://172.31.17.110:8000/api/:path*",
+            : `http://ec2-54-202-118-127.us-west-2.compute.amazonaws.com:8000/api/:path*`
+            // : `http://${process.env.VM_ADDRESS}:8000/api/:path*`,
       },
       {
         source: "/docs",

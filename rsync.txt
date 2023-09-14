@@ -1,0 +1,6 @@
+.next/
+public/
+api/
+package.json
+requirements.txt
+start.sh

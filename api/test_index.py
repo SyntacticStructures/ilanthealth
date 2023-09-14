@@ -160,7 +160,7 @@ class Test(TestCase):
         assert response.status_code == HTTPStatus.OK
         assert response.json() == json.dumps([{
             "title": "title",
-            "thumbnail": "",
+            "thumbnail": "no-cover.png",
             "authors": ['Jerry West', 'Magic Johnson'],
             "description": "description"
         }])

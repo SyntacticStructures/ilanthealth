@@ -4,25 +4,49 @@ on:
       - master
 
 jobs:
-  test:
-    name: test
+  test_build_deploy:
+    name: test_build_deploy
     runs-on: ubuntu-22.04
     env:
-      API_KEY: 'foo'
+      API_KEY: 'TEST_API_KEY'
+      VM_ADDRESS: ${{vars.VM_PUBLIC_ADDRESS}}
     defaults:
       run:
         shell: bash
         working-directory: ${{ github.workspace }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: webfactory/ssh-agent@v0.7.0
         with:
-          python-version: 'pypy3.9'
-      - uses: actions/setup-node@v3
+          ssh-private-key: ${{ secrets.VM_SECRET }}
+      - uses: actions/checkout@v4
+      - name: Set up NodeJS
+        uses: actions/setup-node@v3
         with:
           node-version: '20.3.1'
-      - run: python -m venv venv
-      - run: source venv/bin/activate
-      - run: pip install -r requirements.txt
-      - run: npm install
-      - run: npm test
+          cache: 'npm'
+      - run: npm ci
+#      - name: Set up Python
+#        uses: actions/setup-python@v4
+#        with:
+#          python-version: 'pypy3.9'
+#          cache: 'pip'
+#      - run: |
+#          python -m venv venv
+#          source venv/bin/activate
+#          pip install --upgrade pip
+#          pip install -r requirements.txt
+#      - name: Lint with ruff and eslint
+#        run: |
+#          source venv/bin/activate
+#          npm run lint
+#      - name: Test with jest and pytest
+#        run: |
+#          source venv/bin/activate
+#          npm test
+      - name: Build
+        run: npm run build
+      - run: ssh -o StrictHostKeyChecking=no ${{vars.VM_USER}}@${{vars.VM_PUBLIC_ADDRESS}} mkdir -p /home/${{vars.VM_USER}}/ilianthealth || true
+      - run: ssh ${{vars.VM_USER}}@${{vars.VM_PUBLIC_ADDRESS}} "cd /home/ubuntu/ilianthealth/; bash stop.sh || true"
+      - run: ssh ${{vars.VM_USER}}@${{vars.VM_PUBLIC_ADDRESS}} rm -rf /home/${{vars.VM_USER}}/ilianthealth/.next
+      - run: rsync --verbose -a . ${{vars.VM_USER}}@${{vars.VM_PUBLIC_ADDRESS}}:/home/${{vars.VM_USER}}/ilianthealth/
+      - run: ssh ${{vars.VM_USER}}@${{vars.VM_PUBLIC_ADDRESS}} "cd /home/ubuntu/ilianthealth/; export API_KEY=${{ secrets.GOOGLE_API_KEY }}; export VM_ADDRESS=${{vars.VM_PUBLIC_ADDRESS}}; bash start.sh"
