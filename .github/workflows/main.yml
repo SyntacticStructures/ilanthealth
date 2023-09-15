@@ -25,24 +25,24 @@ jobs:
           node-version: '20.3.1'
           cache: 'npm'
       - run: npm ci
-#      - name: Set up Python
-#        uses: actions/setup-python@v4
-#        with:
-#          python-version: 'pypy3.9'
-#          cache: 'pip'
-#      - run: |
-#          python -m venv venv
-#          source venv/bin/activate
-#          pip install --upgrade pip
-#          pip install -r requirements.txt
-#      - name: Lint with ruff and eslint
-#        run: |
-#          source venv/bin/activate
-#          npm run lint
-#      - name: Test with jest and pytest
-#        run: |
-#          source venv/bin/activate
-#          npm test
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 'pypy3.9'
+          cache: 'pip'
+      - run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Lint with ruff and eslint
+        run: |
+          source venv/bin/activate
+          npm run lint
+      - name: Test with jest and pytest
+        run: |
+          source venv/bin/activate
+          npm test
       - name: Build
         run: npm run build
       - run: ssh -o StrictHostKeyChecking=no ${{vars.VM_USER}}@${{vars.VM_PUBLIC_ADDRESS}} mkdir -p /home/${{vars.VM_USER}}/ilianthealth || true
